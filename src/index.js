@@ -1,15 +1,27 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import connectDB from './db/index.js';
+import cors from 'cors';
+import healthCheckRoutes from './routes/healthcheck.routes.js';
 
 dotenv.config();
 
 
 const app = express();
 
-app.get('/health', (req, res) => {
-  res.send('Hello, World!');
-});
+//middlewares 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin:process.env.CORS_ORIGIN?.split(",") || 'http://localhost:5173',
+  credentials:true,
+  methods:['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
+  allowHeaders:['Content-Type','Authorization']
+}))
+
+//routes
+app.use("/api/v1",healthCheckRoutes)
+
 
 const PORT = process.env.PORT || 3000;
 
