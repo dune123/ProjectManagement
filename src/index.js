@@ -3,6 +3,7 @@ import express from 'express';
 import connectDB from './db/index.js';
 import cors from 'cors';
 import healthCheckRoutes from './routes/healthcheck.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors({
 
 //routes
 app.use("/api/v1",healthCheckRoutes)
+app.use("/api/v1/auth",authRoutes)
 
 
 const PORT = process.env.PORT || 3000;

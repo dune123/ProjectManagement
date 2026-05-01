@@ -1,5 +1,5 @@
 import mongoose,{Schema} from 'mongoose';
-import brcypt from "brcypt"
+import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 
@@ -55,18 +55,17 @@ const userSchema=new Schema({
         type:String
     },
     emailVerificationTokenExpiry:{
-        type:date
+        type:Date
     }
 },
 {
     timestamps:true
 })
 
-userSchema.pre('save',async function(next){
-    if (!this.isModified('password')) return next()
+userSchema.pre('save',async function(){
+    if (!this.isModified('password')) return
 
     this.password=await bcrypt.hash(this.password,10)
-    next()
 })
 
 userSchema.methods.comparePassword=async function(password){
@@ -87,7 +86,7 @@ userSchema.methods.generateAccessToken=function(){
     )
 }
 
-userSchema.methods.generateAccessToken=function(){
+userSchema.methods.generateRefreshToken=function(){
     return jwt.sign(
         {
             _id:this._id,
@@ -99,6 +98,23 @@ userSchema.methods.generateAccessToken=function(){
             expiresIn:process.env.REFRESH_TOKEN_EXPIRE
         }
     )
+}
+
+userSchema.methods.generateTemporaryToken=function(){
+    const unHashedToken=jwt.sign(
+        {
+            _id:this._id
+        },
+        process.env.TEMP_TOKEN_SECRET,
+        {
+            expiresIn:process.env.TEMP_TOKEN_EXPIRE||'15m'
+        }
+    )
+    return {
+        unHashedToken,
+        hashedToken:unHashedToken,
+        tokenExpiry:new Date(Date.now() + 15*60*1000)
+    }
 }
 
 export const User=mongoose.model('User',userSchema)

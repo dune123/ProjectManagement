@@ -11,9 +11,12 @@ const sendEmail=async(option)=>{
         }
     })
 
-    const emailTexual=mailGenerator.setTemplate(option.mailGenContent)
+    const mailgenContent = option.mailgenContent ?? option.mailGenContent
+    if(!mailgenContent){
+        throw new Error("mailgenContent is required to generate email template")
+    }
 
-    const emailHTML=mailGenerator.generate(option.mailGenContent)
+    const emailHTML=mailGenerator.generate(mailgenContent)
 
     const transporter=nodemailer.createTransport({
         host:process.env.MAILTRAP_SMTP_HOST,
@@ -28,7 +31,6 @@ const sendEmail=async(option)=>{
         from: "mail.taskmanager@example.com",
         to: option.email,
         subject: option.subject,
-        text: emailTexual,
         html: emailHTML,
     }
 
@@ -39,7 +41,7 @@ const sendEmail=async(option)=>{
     }
 }
 
-const emailVerificationMailgenContent=async(username,verificationUrl)=>{
+const emailVerificationMailgenContent=(username,verificationUrl)=>{
     return{
         body:{
             name:username,
@@ -57,7 +59,7 @@ const emailVerificationMailgenContent=async(username,verificationUrl)=>{
     }
 }
 
-const forgotPasswordMailgenContent=async(username,passwordResetUrl)=>{
+const forgotPasswordMailgenContent=(username,passwordResetUrl)=>{
     return{
         body:{
             name:username,
