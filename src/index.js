@@ -4,6 +4,7 @@ import connectDB from './db/index.js';
 import cors from 'cors';
 import healthCheckRoutes from './routes/healthcheck.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors({
   methods:['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
   allowHeaders:['Content-Type','Authorization']
 }))
+app.use(cookieParser());
 
 //routes
 app.use("/api/v1",healthCheckRoutes)
