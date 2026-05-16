@@ -2,9 +2,14 @@ import dotenv from 'dotenv';
 import express from 'express';
 import connectDB from './db/index.js';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+
+//Routes
 import healthCheckRoutes from './routes/healthcheck.routes.js';
 import authRoutes from './routes/auth.routes.js';
-import cookieParser from 'cookie-parser';
+import projectRoutes from './routes/project.routes.js';
+import taskRoutes from './routes/task.route.js';
+import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
 
 dotenv.config();
 
@@ -25,7 +30,11 @@ app.use(cookieParser());
 //routes
 app.use("/api/v1",healthCheckRoutes)
 app.use("/api/v1/auth",authRoutes)
+app.use("/api/v1/projects",projectRoutes)
+app.use("/api/v1/tasks",taskRoutes)
 
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 

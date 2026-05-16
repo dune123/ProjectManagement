@@ -23,8 +23,37 @@ const userRegisterValidator = () => {
 
 const userLoginValidator = () => {
   return [
-    body("email").optional().isEmail().withMessage("Email is invalid"),
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email is required")
+      .isEmail()
+      .withMessage("Email is invalid"),
     body("password").notEmpty().withMessage("Password is required"),
+  ];
+};
+
+const userVerifyEmailOtpValidator = () => {
+  return [
+    body("otp")
+      .trim()
+      .notEmpty()
+      .withMessage("OTP is required")
+      .isLength({ min: 6, max: 6 })
+      .withMessage("OTP must be 6 digits")
+      .isNumeric()
+      .withMessage("OTP must contain only numbers"),
+  ];
+};
+
+const userResendVerificationOtpValidator = () => {
+  return [
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email is required")
+      .isEmail()
+      .withMessage("Email is invalid"),
   ];
 };
 
@@ -75,6 +104,8 @@ const addMembertoProjectValidator = () => {
 export {
   userRegisterValidator,
   userLoginValidator,
+  userVerifyEmailOtpValidator,
+  userResendVerificationOtpValidator,
   userChangeCurrentPasswordValidator,
   userForgotPasswordValidator,
   userResetForgotPasswordValidator,
